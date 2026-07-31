@@ -1,4 +1,10 @@
-import { IsEmail, IsEnum, IsString, MinLength } from 'class-validator';
+import {
+  IsEmail,
+  IsEnum,
+  IsOptional,
+  IsString,
+  MinLength,
+} from 'class-validator';
 import { UserRole } from '@food-delivery-app/types';
 
 export class RegisterDto {
@@ -16,5 +22,6 @@ export class RegisterDto {
   password!: string;
 
   @IsEnum(UserRole)
+  @IsOptional()
   role!: UserRole;
 }
