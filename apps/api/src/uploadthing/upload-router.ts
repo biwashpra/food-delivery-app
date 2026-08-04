@@ -29,7 +29,7 @@ export const uploadRouter: FileRouter = {
     }),
 
   // another routeSlug
-  menuItemImages: f({
+  menuItemImage: f({
     image: {
       maxFileSize: '4MB',
       maxFileCount: 1,
