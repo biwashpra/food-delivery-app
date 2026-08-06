@@ -8,8 +8,10 @@ import {
 import * as schema from '../db/schema';
 import { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import { CreateRestaurantDto } from './dto/create-restaurant.dto';
-import { eq } from 'drizzle-orm';
+import { eq, ilike } from 'drizzle-orm';
 import { UpdateRestaurantDto } from './dto/update-restaurant.dto';
+import { and } from 'drizzle-orm';
+import { or } from 'drizzle-orm';
 
 @Injectable()
 export class RestaurantsService {
@@ -61,8 +63,27 @@ export class RestaurantsService {
     return restaurant;
   }
 
-  async findAll() {
-    return this.db.select().from(schema.restaurants);
+  async findAll(search?: string) {
+    // if search is provided, filter by name OR cuisine type (case-insensitive)
+    // only return open restaurants to customers
+    if (search) {
+      return this.db
+        .select()
+        .from(schema.restaurants)
+        .where(
+          and(
+            eq(schema.restaurants.isOpen, true),
+            or(
+              ilike(schema.restaurants.name, `%${search}%`),
+              ilike(schema.restaurants.cuisineType, `%${search}%`),
+            ),
+          ),
+        );
+    }
+    return this.db
+      .select()
+      .from(schema.restaurants)
+      .where(eq(schema.restaurants.isOpen, true));
   }
 
   async update(id: string, ownerId: string, dto: UpdateRestaurantDto) {
